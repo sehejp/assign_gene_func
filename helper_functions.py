@@ -28,6 +28,20 @@ def global_alignment(seq1, seq2, scoring_function):
     Other alignments are not possible.
 
     """
+
+    n, m = len(seq1), len(seq2)
+
+    # H = score table, T = tracecback (1 = diagonal, 2 = up, 3 = left)
+    H = [[0,0] * (m + 1) for _ in range(n + 1)]
+    T = [[0] * (m + 1) for _ in range(n + 1)]
+
+    for i in range(1, n + 1):
+        H[i][0] = H[i - 1][0] + scoring_function(seq1[i - 1], "-")
+        T[i][0] = 2
+    for j in range(1, m + 1):
+        H[0][j] = H[0][j - 1] + scoring_function("-", seq2[j - 1])
+        T[0][j] = 3
+    
     raise NotImplementedError()
 
 
