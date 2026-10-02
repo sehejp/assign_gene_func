@@ -98,6 +98,18 @@ def local_alignment(seq1, seq2, scoring_function):
     Other alignments are not possible.
 
     """
+
+    n, m = len(seq1), len(seq2)
+
+    gap1 = [scoring_function(a, "-") for a in seq1]
+    gap2 = [scoring_function("-", b) for b in seq2]
+    pair = {(a, b): scoring_dunction(a, b) for a in set(seq1) for b in set(seq2)}
+
+    H = [[0.0] * (m + 1) for _ in range(n + 1)]
+    T = [[0] * (m + 1) for _ in range(n + 1)]
+
+    best, best_i, best_j = 0.0, 0, 0
+    
     raise NotImplementedError()
 
 
