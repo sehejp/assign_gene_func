@@ -103,7 +103,7 @@ def local_alignment(seq1, seq2, scoring_function):
 
     gap1 = [scoring_function(a, "-") for a in seq1]
     gap2 = [scoring_function("-", b) for b in seq2]
-    pair = {(a, b): scoring_dunction(a, b) for a in set(seq1) for b in set(seq2)}
+    pair = {(a, b): scoring_function(a, b) for a in set(seq1) for b in set(seq2)}
 
     H = [[0.0] * (m + 1) for _ in range(n + 1)]
     T = [[0] * (m + 1) for _ in range(n + 1)]
@@ -114,7 +114,7 @@ def local_alignment(seq1, seq2, scoring_function):
         a = seq1[i - 1]
         prev, cur = H[i - 1], H[i]
         for j in range(1, m + 1):
-            diag = prev[j - 1] + pair[a, seq[j - 1]]
+            diag = prev[j - 1] + pair[a, seq2[j - 1]]
             up = prev[j] + gap1[i - 1]
             left = cur[j - 1] + gap2[j - 1]
             if diag >= up and diag >= left:
@@ -127,9 +127,20 @@ def local_alignment(seq1, seq2, scoring_function):
                 score, move = 0.0, 0
             cur[j], T[i][j] = score, move
             if score > best:
-                best, best_1, best_j = score, i, j
-                
-    raise NotImplementedError()
+                best, best_i, best_j = score, i, j
+
+    out1, out2 = [], []
+    i, j = best_i, best_j
+    while T[i][j] != 0:
+        t = T[i][j]
+        if t == 1:
+            out1.append(seq1[i - 1]); out2.append(seq2[j - 1]); i -= 1; j -= 1
+        elif t == 2:
+            out1.append(seq1[i - 1]); out2.append("-"); i -= 1
+        else: 
+            out1.append("-"); out2.append(seq2[j - 1]); j -= 1
+
+    return "".join(reversed(out1)), "".join(reversed(out2)), float(best)
 
 
 ## This is an example scoring function, you should implement a version which uses a scoring matrix 
