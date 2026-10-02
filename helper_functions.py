@@ -109,7 +109,26 @@ def local_alignment(seq1, seq2, scoring_function):
     T = [[0] * (m + 1) for _ in range(n + 1)]
 
     best, best_i, best_j = 0.0, 0, 0
-    
+
+    for i in range(1, n + 1):
+        a = seq1[i - 1]
+        prev, cur = H[i - 1], H[i]
+        for j in range(1, m + 1):
+            diag = prev[j - 1] + pair[a, seq[j - 1]]
+            up = prev[j] + gap1[i - 1]
+            left = cur[j - 1] + gap2[j - 1]
+            if diag >= up and diag >= left:
+                score, move = diag, 1
+            elif up >= left:
+                score, move = up, 2
+            else: 
+                score, move = left, 3
+            if score <= 0:
+                score, move = 0.0, 0
+            cur[j], T[i][j] = score, move
+            if score > best:
+                best, best_1, best_j = score, i, j
+                
     raise NotImplementedError()
 
 
