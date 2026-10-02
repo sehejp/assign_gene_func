@@ -41,6 +41,18 @@ def global_alignment(seq1, seq2, scoring_function):
     for j in range(1, m + 1):
         H[0][j] = H[0][j - 1] + scoring_function("-", seq2[j - 1])
         T[0][j] = 3
+
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            diag = H[i - 1][j - 1] + scoring_function(seq1[i - 1], seq2[j - 1])
+            up = H[i - 1][j] + scoring_function(seq1[i - 1), "-")
+            left = H[i][j - 1] + scoring_function("-", seq2[j - 1])
+            if diag >= up and diag>= left:
+                H[i][j], T[i][j] = diag, 1
+            elif up >= left:
+                H[i][j], T[i][j] = up, 2
+            else
+                H[i][j], T[i][j] = left, 3
     
     raise NotImplementedError()
 
