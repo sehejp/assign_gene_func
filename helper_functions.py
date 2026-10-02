@@ -32,7 +32,7 @@ def global_alignment(seq1, seq2, scoring_function):
     n, m = len(seq1), len(seq2)
 
     # H = score table, T = tracecback (1 = diagonal, 2 = up, 3 = left)
-    H = [[0,0] * (m + 1) for _ in range(n + 1)]
+    H = [[0.0] * (m + 1) for _ in range(n + 1)]
     T = [[0] * (m + 1) for _ in range(n + 1)]
 
     for i in range(1, n + 1):
@@ -45,16 +45,27 @@ def global_alignment(seq1, seq2, scoring_function):
     for i in range(1, n + 1):
         for j in range(1, m + 1):
             diag = H[i - 1][j - 1] + scoring_function(seq1[i - 1], seq2[j - 1])
-            up = H[i - 1][j] + scoring_function(seq1[i - 1), "-")
+            up = H[i - 1][j] + scoring_function(seq1[i - 1], "-")
             left = H[i][j - 1] + scoring_function("-", seq2[j - 1])
             if diag >= up and diag>= left:
                 H[i][j], T[i][j] = diag, 1
             elif up >= left:
                 H[i][j], T[i][j] = up, 2
-            else
+            else:
                 H[i][j], T[i][j] = left, 3
     
-    raise NotImplementedError()
+    out1, out2 = [], []
+    i, j = n, m
+    while i > 0 or j > 0:
+        t = T[i][j]
+        if t == 1:
+            out1.append(seq1[i - 1]); out2.append(seq2[j - 1]); i -= 1; j -= 1
+        elif t == 2:
+            out1.append(seq1[i - 1]); out2.append("-"); i -= 1
+        else:
+            out1.append("-"); out2.append(seq2[j - 1]); j -= 1
+            
+    return "".join(reversed(out1)), "".join(reversed(out2)), float(H[n][m])
 
 
 def local_alignment(seq1, seq2, scoring_function):
@@ -97,10 +108,10 @@ def scoring_function_simple(aa_i,aa_j):
 
 from Bio.Align import substitution_matrices
 
-BLOSUM62 = substitution-matrices.load("BLOSUM62")
+BLOSUM62 = substitution_matrices.load("BLOSUM62")
 GAP_SCORE = -4
 
 def scoring_function_blosum62(aa_i, aa_j):
-    if aa_i = "-" or aa_j = "-":
+    if aa_i == "-" or aa_j == "-":
         return GAP_SCORE
     return float(BLOSUM62[aa_i,aa_j])
